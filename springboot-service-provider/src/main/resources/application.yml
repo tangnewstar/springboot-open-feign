@@ -1,0 +1,18 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: springboot-service-provider
+
+eureka:
+  client:
+    service-url:
+      # 注册中心地址
+      defaultZone: http://localhost:8081/eureka/
+  instance:
+    # 心跳间隔
+    lease-renewal-interval-in-seconds: 5
+    # 心跳超时时间
+    lease-expiration-duration-in-seconds: 10
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true

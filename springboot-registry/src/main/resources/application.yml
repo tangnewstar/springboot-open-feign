@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: springboot-registry
+
+eureka:
+  #  无需向注册中心注册，不拉取服务信息
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  # 客户端注册是使用ip而不是主机名
+  instance:
+    prefer-ip-address: true

@@ -1,0 +1,32 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: springboot-service-consumer
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8081/eureka/
+  instance:
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 3000
+        loggerLevel: basic
+
+    github:
+      url: https://api.github.com
+
+  circuitbreaker:
+    enabled: true
+
+  hytrix:
+    enabled: true
+
