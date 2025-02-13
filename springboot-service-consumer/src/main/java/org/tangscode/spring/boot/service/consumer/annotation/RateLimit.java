@@ -2,8 +2,6 @@ package org.tangscode.spring.boot.service.consumer.annotation;
 
 import java.lang.annotation.*;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author tangxinxing
@@ -14,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RateLimiter {
+public @interface RateLimit {
     int capacity() default 1;
     int refillTokens() default 1;
     int refillPeriod() default 1;

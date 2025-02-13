@@ -8,7 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import org.tangscode.spring.boot.service.consumer.annotation.RateLimiter;
+import org.tangscode.spring.boot.service.consumer.annotation.RateLimit;
 
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Aspect
 @Component
-public class RateLimiterAspect {
+public class RateLimitAspect {
     private final ConcurrentHashMap<String, Bucket> buckets = new ConcurrentHashMap<>();
 
-    @Around("@annotation(rateLimiter)")
-    public Object rateLimit(ProceedingJoinPoint joinPoint, RateLimiter rateLimiter) throws Throwable {
+    @Around("@annotation(rateLimit)")
+    public Object rateLimit(ProceedingJoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
         String key = joinPoint.getSignature().toShortString();
-        Bucket bucket = buckets.computeIfAbsent(key, k -> createBucket(rateLimiter));
+        Bucket bucket = buckets.computeIfAbsent(key, k -> createBucket(rateLimit));
         if (bucket.tryConsume(1)) {
             return joinPoint.proceed();
         } else {
@@ -36,7 +36,7 @@ public class RateLimiterAspect {
         }
     }
 
-    private Bucket createBucket(RateLimiter rateLimiter) {
+    private Bucket createBucket(RateLimit rateLimiter) {
         // refill tokens and interval
         Refill refill = Refill.intervally(rateLimiter.refillTokens(),
                 Duration.of(rateLimiter.refillPeriod(), rateLimiter.refillUnit()));

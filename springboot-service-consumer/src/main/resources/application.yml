@@ -27,6 +27,16 @@ feign:
   circuitbreaker:
     enabled: true
 
-  hytrix:
-    enabled: true
+#  hytrix:
+#    enabled: true
 
+#resilience4j:
+#  ratelimiter:
+#    instances:
+#      default:
+#        limit-for-period: 1
+#        limit-refresh-period: 1s
+#        timeout-duration: 0
+logging:
+  level:
+    io.github.resilience4j: DEBUG
