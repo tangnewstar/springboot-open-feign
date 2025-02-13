@@ -2,6 +2,7 @@ package org.tangscode.spring.boot.service.consumer.controller;
 
 import io.github.bucket4j.Bucket;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,15 +43,20 @@ public class TestController {
         return ResponseEntity.ok(helloClient.sayHello());
     }
 
-    @RateLimit(capacity = 1, refillTokens = 1, refillPeriod = 1)
+    @RateLimit(capacity = 1, refillTokens = 1, refillPeriod = 1, fallbackMethod = "githubFallback")
     @GetMapping("/github/{owner}/{repo}")
-    public GitHubClient.GitHubRepo getRepo(@PathVariable String owner, @PathVariable String repo) {
+    public ResponseEntity getRepo(@PathVariable String owner, @PathVariable String repo) {
         logger.info("getRepo() called with owner: {} and repo: {}", owner, repo);
-        return gitHubClient.getRepo(owner, repo);
+        return ResponseEntity.ok(gitHubClient.getRepo(owner, repo));
     }
 
     public ResponseEntity fallback(Throwable t) {
         logger.error("Fallback method called with exception: {}", t.toString());
         return ResponseEntity.ok("request limit exceeded");
+    }
+
+    public ResponseEntity githubFallback(Throwable t) {
+        logger.error("Fallback method called for getRepo with exception", t);
+        return ResponseEntity.ok(ExceptionUtils.getRootCauseMessage(t));
     }
 }

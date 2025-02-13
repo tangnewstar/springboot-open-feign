@@ -17,4 +17,5 @@ public @interface RateLimit {
     int refillTokens() default 1;
     int refillPeriod() default 1;
     ChronoUnit refillUnit() default ChronoUnit.SECONDS;
+    String fallbackMethod() default "";
 }

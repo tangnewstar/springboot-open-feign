@@ -4,12 +4,14 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.tangscode.spring.boot.service.consumer.annotation.RateLimit;
 
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,8 +33,12 @@ public class RateLimitAspect {
         if (bucket.tryConsume(1)) {
             return joinPoint.proceed();
         } else {
-            return "rate limit exceeded";
-//            throw new RuntimeException("rate limit exceeded");
+            Throwable t = new RuntimeException("rate limit exceeded");
+            if (StringUtils.isNotEmpty(rateLimit.fallbackMethod())) {
+                Method method = joinPoint.getTarget().getClass().getMethod(rateLimit.fallbackMethod(), Throwable.class);
+                return method.invoke(joinPoint.getTarget(), t);
+            }
+            throw t;
         }
     }
 
